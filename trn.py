@@ -28,10 +28,9 @@ def get_minibatch(x, y, n, M):
   return x_batch, y_batch
 
 #miniBatch-SGDM's Training 
-def trn_minibatch(x, y, ann, param):
+def trn_minibatch(x, y, ann, param, V):
   N = len(x[0])
   M = param['M_batch']
-  V = create_momentum(ann['W'], ann['L'])
   nBatch = N // M
   ann_mse = []
   min_mse = 10
@@ -58,11 +57,12 @@ def trn_minibatch(x, y, ann, param):
 
 #SNN's Training 
 def train(x, y, ann, param):
+  V = create_momentum(ann['W'], ann['L'])
   mse = []
 
   for i in range(param['max_iter']):
     X, Y = ut.sort_data_random(x,y, x.shape[0])
-    ann_mse = trn_minibatch(X, Y, ann, param)
+    ann_mse = trn_minibatch(X, Y, ann, param, V)
     mse.append(np.mean(ann_mse))
 
     if (i % 100) == 0:
