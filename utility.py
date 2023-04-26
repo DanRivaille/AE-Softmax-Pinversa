@@ -168,10 +168,12 @@ def updWV_sgdm(ann, param, dE_dW, V):
   beta = param['beta']
   mu = param['mu']
   W = ann['W']
+  epsilon = 0.00000001
 
   for l in range(1, L + 1):
-    V[l] = beta * V[l] + mu * dE_dW[l]
-    W[l] = W[l] - V[l]
+    V[l] = beta * V[l] + (1 - beta) * (dE_dW[l] ** 2)
+    gRMS = (1 / np.sqrt(V[l] + epsilon)) * dE_dW[l]
+    W[l] = W[l] - mu * gRMS
 
   return W, V
 
