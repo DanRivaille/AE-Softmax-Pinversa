@@ -57,8 +57,7 @@ def trn_minibatch(x, y, ann, param):
   return ann_mse
 
 #SNN's Training 
-def train(x, y, param):
-  ann = init_ann(param, x)
+def train(x, y, ann, param):
   mse = []
 
   for i in range(param['max_iter']):
@@ -94,7 +93,8 @@ def load_data_trn(param):
 def main():
   param = ut.load_cnf()            
   xe, ye = load_data_trn(param)
-  W, Cost = train(xe, ye, param)
+  ann = init_ann(param, xe)
+  W, Cost = train(xe, ye, ann, param)
   save_w_mse(W, Cost)
 
 
