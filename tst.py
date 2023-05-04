@@ -6,7 +6,7 @@ def save_measure(cm, Fsc):
   np.savetxt("fscores.csv", np.array(Fsc))
 
 
-def load_w(L):
+def load_w_dl(L):
   pesos = np.load('w_snn.npz', allow_pickle=True)
   W = [None] * (L + 1)
 
@@ -28,7 +28,7 @@ def main():
   param = ut.load_cnf()
   xv, yv  = load_data_test(param)
   ann = ut.create_ann(param['hidden_nodes'], xv)
-  ann['W'] = load_w(ann['L'])
+  ann['W'] = load_w_dl(ann['L'])
   aL = ut.get_one_hot(np.argmax(ut.forward(ann, param, xv), axis=0) + 1, param['n_classes']).T
   cm, Fsc = ut.metricas(aL, yv)
   save_measure(cm, Fsc)
