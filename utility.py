@@ -37,6 +37,33 @@ def load_cnf():
 
   return param
 
+def load_cnf_ae():
+  FILE_CNF = 'cnf_sae.csv'
+  param = dict()
+  cnf_list = np.loadtxt(FILE_CNF, dtype=float)
+  param['p_inv_param'] = int(cnf_list[0])
+  param['g_fun'] = int(cnf_list[1])
+  param['max_iter'] = int(cnf_list[2])
+  param['M_batch'] = int(cnf_list[3])
+  param['mu'] = cnf_list[4]
+  
+  ae_nodes = []
+
+  for n_nodes in cnf_list[5:]:
+    ae_nodes.append(int(n_nodes))
+
+  param['ae_nodes'] = ae_nodes
+  return param
+
+def load_cnf_softmax():
+  FILE_CNF = 'cnf_softmax.csv'
+  param = dict()
+  cnf_list = np.loadtxt(FILE_CNF, dtype=float)
+  param['max_iter'] = int(cnf_list[0])
+  param['mu'] = cnf_list[1]
+  param['M_batch'] = int(cnf_list[2])
+  return param
+
 
 # Initialize weights for SNN-SGDM
 def iniWs(W, L, d, m, n_nodes):
