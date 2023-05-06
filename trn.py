@@ -50,7 +50,7 @@ def trn_minibatch(x, y, ann, param, V):
       min_mse = cost
 
     de_dw = ut.gradW(ann, param, e)
-    ann['W'], V = ut.updWV_sgdm(ann, param, de_dw, V)
+    ann['W'], V = ut.updWV_rmsprop(ann, param, de_dw, V)
 
   ann['W'] = W
   return ann_mse
@@ -82,20 +82,20 @@ def init_ann(param, x):
 
 
 # Load data to train the SNN
-def load_data_trn(param):
+def load_data_trn():
   FILE_X = 'dtrn.csv'
   FILE_Y = 'etrn.csv'
-  X_train, y_train = ut.load_data(FILE_X, FILE_Y, param['n_classes'])
+  X_train, y_train = ut.load_data(FILE_X, FILE_Y)
   return X_train, y_train
 
 
 # Beginning ...
 def main():
-  param = ut.load_cnf()            
-  xe, ye = load_data_trn(param)
-  ann = init_ann(param, xe)
-  W, Cost = train(xe, ye, ann, param)
-  save_w_mse(W, Cost)
+  #param = ut.load_cnf()
+  xe, ye = load_data_trn()
+  #ann = init_ann(param, xe)
+  #W, Cost = train(xe, ye, ann, param)
+  #save_w_mse(W, Cost)
 
 
 if __name__ == '__main__':   

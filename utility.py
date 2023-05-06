@@ -9,33 +9,11 @@ _lambda = 1.0507
 SIGMOID_N_FUN = 5
 
 
-# load parameters to train the SNN
-def load_cnf():
-  FILE_CNF = 'cnf.csv'
-  param = dict()
-  cnf_list = np.loadtxt(FILE_CNF, dtype=float)
+def load_data(file_x, file_y):
+  X = np.loadtxt(file_x, delimiter=',', dtype=float)
+  y = np.loadtxt(file_y, delimiter=',', dtype=int)
+  return X, y.T
 
-  param['n_classes'] = int(cnf_list[0])
-  param['n_frame'] = int(cnf_list[1])
-  param['l_frame'] = int(cnf_list[2])
-  param['j_desc'] = int(cnf_list[3])
-
-  hidden_nodes_layer_1 = int(cnf_list[4])
-  hidden_nodes_layer_2 = int(cnf_list[5])
-
-  param['g_fun'] = int(cnf_list[6])
-  param['p_train'] = cnf_list[7]
-  param['M_batch'] = int(cnf_list[8])
-  param['mu'] = cnf_list[9]
-  param['beta'] = cnf_list[10]
-  param['max_iter'] = int(cnf_list[11])
-
-  if hidden_nodes_layer_2 != 0:
-    param['hidden_nodes'] = [hidden_nodes_layer_1, hidden_nodes_layer_2]
-  else:
-    param['hidden_nodes'] = [hidden_nodes_layer_1]
-
-  return param
 
 def load_cnf_ae():
   FILE_CNF = 'cnf_sae.csv'
@@ -178,7 +156,7 @@ def gradW(ann, param, e):
 
 
 # Update W and V
-def updWV_sgdm(ann, param, dE_dW, V):
+def updWV_rmsprop(ann, param, dE_dW, V):
   L = ann['L']
   beta = param['beta']
   mu = param['mu']
@@ -209,35 +187,6 @@ def get_mse(y_pred, y_true):
   mse = (np.sum(e ** 2) / (2 * N))
 
   return mse
-
-
-# Measure
-def metricas(a, y):
-  cm = confusion_matrix(a, y)
-  k = cm.shape[0]
-  fscore_result = [0] * (k + 1)
-
-  for j in range(k):
-    fscore_result[j] = fscore(j, cm, k)
-
-  fscore_result[k] = np.mean(fscore_result[:-1])
-
-  return cm, fscore_result
-
-
-# Confusion matrix
-def confusion_matrix(a, y):
-  k, N = y.shape
-  cm = np.zeros((k, k), dtype=int)
-
-  for i in range(k):
-    for j in range(k):
-      for n in range(N):
-        if y[j, n] == 1 and a[i, n] == 1:
-          cm[i, j] += 1
-
-  return cm
-
 
 # Function in charge of calculating the precision
 def precision(i, cm, k):
