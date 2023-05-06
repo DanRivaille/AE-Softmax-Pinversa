@@ -91,7 +91,8 @@ def load_data_trn():
 
 # Beginning ...
 def main():
-  #param = ut.load_cnf()
+  param_ae = ut.load_cnf_ae()
+  param_soft = ut.load_cnf_softmax()
   xe, ye = load_data_trn()
   #ann = init_ann(param, xe)
   #W, Cost = train(xe, ye, ann, param)

@@ -50,8 +50,9 @@ def confusion_matrix(a, y):
   return cm
 
 # Beginning ...
-def main():			
-  #param = ut.load_cnf()
+def main():
+  param_ae = ut.load_cnf_ae()
+  param_soft = ut.load_cnf_softmax()
   xv, yv  = load_data_tst()
   #ann = ut.create_ann(param['hidden_nodes'], xv)
   #ann['W'] = load_w_dl(ann['L'])
