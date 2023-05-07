@@ -169,7 +169,7 @@ def updWV_rmsprop(ann, param, dE_dW, V):
   W = ann['W']
   epsilon = 0.00000001
 
-  for l in range(1, L + 1):
+  for l in range(1, L):
     V[l] = beta * V[l] + (1 - beta) * (dE_dW[l] ** 2)
     gRMS = (1 / np.sqrt(V[l] + epsilon)) * dE_dW[l]
     W[l] = W[l] - mu * gRMS
@@ -181,15 +181,21 @@ def compute_Pinv(ann, H, param_ae):
   n = ann['hidden_nodes'][0]
   C = param_ae['p_inv_param']
   A = (H @ H.T) + (np.identity(n) / C)
-  U, S, Vt = np.linalg.svd(A, full_matrices=False)
+  U, S, Vt = np.linalg.svd(A, full_matrices=True)
   S_1 = np.diag(1 / S)
+  print(S_1.shape)
   A_1 = Vt @ S_1 @ U.T
+  print(A_1.shape)
   return A_1
 
 
 def updPinv(ann, xe, param_ae):
   H = ann['a'][1]
   A_1 = compute_Pinv(ann, H, param_ae)
+  print(xe.shape)
+  print(H.shape, H.T.shape)
+  print(A_1.shape)
+  print()
   W_new = xe @ H.T @ A_1
   return W_new
 
