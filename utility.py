@@ -188,6 +188,10 @@ def get_mse(y_pred, y_true):
 
   return mse
 
+def get_one_hot(y, K):
+  res = np.eye(K)[(y - 1).reshape(-1)]
+  return res.reshape(list(y.shape) + [K]).astype(int)
+
 # Function in charge of calculating the precision
 def precision(i, cm, k):
   suma = np.sum(cm[i])

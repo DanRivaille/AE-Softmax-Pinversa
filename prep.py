@@ -1,15 +1,11 @@
 import numpy as np
+import utility as ut
 
 
 # Save data: training and testing
 def save_data(X, y, filename):
   np.savetxt('d' + filename, X, delimiter=',')
   np.savetxt('e' + filename, y, delimiter=',', fmt='%i')
-
-
-def get_one_hot(y, K):
-  res = np.eye(K)[(y - 1).reshape(-1)]
-  return res.reshape(list(y.shape) + [K]).astype(int)
 
 
 # Binary label
@@ -20,7 +16,7 @@ def load_data_csv(filename):
   nC = labels.max()
 
   X = data[:-1]
-  y = get_one_hot(labels, nC)
+  y = ut.get_one_hot(labels, nC)
 
   return X, y
 
