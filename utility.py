@@ -169,7 +169,7 @@ def updWV_rmsprop(ann, param, dE_dW, V):
   W = ann['W']
   epsilon = 0.00000001
 
-  for l in range(1, L):
+  for l in range(1, L + 1):
     V[l] = beta * V[l] + (1 - beta) * (dE_dW[l] ** 2)
     gRMS = (1 / np.sqrt(V[l] + epsilon)) * dE_dW[l]
     W[l] = W[l] - mu * gRMS

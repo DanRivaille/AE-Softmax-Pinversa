@@ -85,24 +85,26 @@ def init_ann(hidden_nodes, d, m):
 
   return ann
 
+
 # miniBatch-SGDM's Training
 def trn_minibatch(x, y, ann, param, V):
   N = x.shape[1]
   M = param['M_batch']
   nBatch = N // M
-
+  mse = []
   for n in range(nBatch):
     xe, ye = get_minibatch(x, y, n, M)
     
     act = ut.forward(ann, param, xe)
     e = act - ye
-
+    costo = ut.get_mse(act, ye)
+    mse.append(costo)
     de_dw = ut.gradW(ann, param, e)
     ann['W'], V = ut.updWV_rmsprop(ann, param, de_dw, V)
 
-  ann['W'][2] = ut.updPinv(ann, x, param)
+  #ann['W'][2] = ut.updPinv(ann, x, param)
 
-  return ann['W'], V
+  return ann['W'], V, mse
 
 
 # AE's Training by use miniBatch RMSprop+Pinv
@@ -113,10 +115,10 @@ def train_ae(x, param_ae, Ni):
 
   for i in range(param_ae['max_iter']):
     xe = x[:, np.random.permutation(x.shape[1])]
-    ae['W'], V = trn_minibatch(xe, xe, ae, param_ae, V)
+    ae['W'], V, mse = trn_minibatch(xe, xe, ae, param_ae, V)
   
     if (i % 10) == 0:
-      print(i)
+      print(i, np.mean(mse))
 
   return ae['W'][1]
 
