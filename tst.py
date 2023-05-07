@@ -62,13 +62,12 @@ def create_ae_softmax_nn(param_ae):
 # Beginning ...
 def main():
   param_ae = ut.load_cnf_ae()
-  param_soft = ut.load_cnf_softmax()
-  xv, yv  = load_data_tst()
+  xv, yv = load_data_tst()
   ann = create_ae_softmax_nn(param_ae)
   ann['W'] = load_w_dl(ann['L'])
-  #aL = ut.get_one_hot(np.argmax(ut.forward(ann, param_ae, xv), axis=0) + 1, yv.shape[0]).T
-  #cm, Fsc = metricas(aL, yv)
-  #save_measure(cm, Fsc)
+  aL = ut.get_one_hot(np.argmax(ut.forward(ann, param_ae, xv), axis=0) + 1, yv.shape[0]).T
+  cm, Fsc = metricas(aL, yv)
+  save_measure(cm, Fsc)
 
 
 if __name__ == '__main__':   
