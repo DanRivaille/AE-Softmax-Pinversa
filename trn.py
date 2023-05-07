@@ -78,19 +78,6 @@ def train(x, y, ann, param):
   return ann['W'], mse
 
 
-def init_ann(hidden_nodes, d, m):
-  """
-  Initialize an ANN with its variables saved into a map.
-  :param hidden_nodes: List with the nodes quantity by layer.
-  :param d: Size of the input
-  :param m: Size of the output
-  """
-  ann = ut.create_ann(hidden_nodes)
-  ann['W'] = ut.iniWs(ann['W'], ann['L'], d, m, hidden_nodes)
-
-  return ann
-
-
 """
 # Training miniBatch for softmax
 def train_sft_batch(x, y, W, V, param):
@@ -132,6 +119,19 @@ def train_softmax(x, y):
   return W
 
 
+def init_ann(hidden_nodes, d, m):
+  """
+  Initialize an ANN with its variables saved into a map.
+  :param hidden_nodes: List with the nodes quantity by layer.
+  :param d: Size of the input
+  :param m: Size of the output
+  """
+  ann = ut.create_ann(hidden_nodes)
+  ann['W'] = ut.iniWs(ann['W'], ann['L'], d, m, hidden_nodes)
+
+  return ann
+
+
 # AE's Training by use miniBatch RMSprop+Pinv
 def train_ae(x, param_ae, Ni):
   d = x.shape[0]
@@ -153,10 +153,11 @@ def train_sae(X, param_ae):
   xe = X
   for n_nodes in param_ae['ae_nodes']:
     W = train_ae(xe, param_ae, n_nodes)
+    xe = W @ xe
 
     Wae.append(W)
 
-  return Wae
+  return Wae, xe
 
 # Load data to train the SNN
 def load_data_trn():
@@ -171,8 +172,8 @@ def main():
   param_ae = ut.load_cnf_ae()
   param_soft = ut.load_cnf_softmax()
   xe, ye = load_data_trn()
+  W_ae, xe = train_sae(xe, param_ae)
   W_sf = train_softmax(xe, ye)
-  W_ae = train_sae(xe, param_ae)
   #W_sf, Cost = train_softmax()
   np.savez('w_ae.npz', *W_ae)
   np.savez('w_sf.npz', W_sf)

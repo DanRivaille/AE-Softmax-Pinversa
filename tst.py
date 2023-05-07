@@ -66,8 +66,7 @@ def main():
   xv, yv  = load_data_tst()
   ann = create_ae_softmax_nn(param_ae)
   ann['W'] = load_w_dl(ann['L'])
-  print()
-  #aL = ut.get_one_hot(np.argmax(ut.forward(ann, param, xv), axis=0) + 1, param['n_classes']).T
+  #aL = ut.get_one_hot(np.argmax(ut.forward(ann, param_ae, xv), axis=0) + 1, yv.shape[0]).T
   #cm, Fsc = metricas(aL, yv)
   #save_measure(cm, Fsc)
 
