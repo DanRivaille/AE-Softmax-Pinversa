@@ -33,6 +33,7 @@ def load_cnf_ae():
   param['ae_nodes'] = ae_nodes
   return param
 
+
 def load_cnf_softmax():
   FILE_CNF = 'cnf_softmax.csv'
   param = dict()
@@ -170,6 +171,7 @@ def updWV_rmsprop(ann, param, dE_dW, V):
 
   return W, V
 
+
 def sort_data_random(x, y, D):
   data = np.concatenate((x, y)).T
   np.random.shuffle(data)
@@ -180,6 +182,7 @@ def sort_data_random(x, y, D):
 
   return input, output
 
+
 # Get MSE
 def get_mse(y_pred, y_true):
   N = y_true.shape[1]
@@ -188,9 +191,11 @@ def get_mse(y_pred, y_true):
 
   return mse
 
+
 def get_one_hot(y, K):
   res = np.eye(K)[(y - 1).reshape(-1)]
   return res.reshape(list(y.shape) + [K]).astype(int)
+
 
 # Function in charge of calculating the precision
 def precision(i, cm, k):
