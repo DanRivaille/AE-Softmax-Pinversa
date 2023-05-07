@@ -33,14 +33,14 @@ def get_minibatch(x, y, n, M):
 
 # miniBatch-SGDM's Training
 def trn_minibatch(x, y, ann, param, V):
-  N = len(x[0])
+  N = x.shape[1]
   M = param['M_batch']
   nBatch = N // M
   ann_mse = []
-  min_mse = 10
+  min_mse = 1e5
   W = None
 
-  for n in range(0, nBatch):
+  for n in range(nBatch):
     xe, ye = get_minibatch(x, y, n, M)
 
     act = ut.forward(ann, param, xe)
@@ -136,14 +136,9 @@ def init_ann(hidden_nodes, d, m):
 def train_ae(x, param_ae, Ni):
   d = x.shape[0]
   ae = init_ann([Ni], d, d)
-  """
-  ....
-  for Iter in range(1, param):
-    xe = x[:, np.random.permutation(x.shape[1])]
-    w1, v, c = train_ae_batch(xe, w1, v, w2, param)
-    ....
-  """
+  #W = train(x, x, ae, param_ae)[0]
 
+  #return W[1]
   return ae['W'][1]
 
 

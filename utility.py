@@ -164,7 +164,7 @@ def gradW(ann, param, e):
 # Update W and V
 def updWV_rmsprop(ann, param, dE_dW, V):
   L = ann['L']
-  beta = param['beta']
+  beta = 0.9
   mu = param['mu']
   W = ann['W']
   epsilon = 0.00000001
