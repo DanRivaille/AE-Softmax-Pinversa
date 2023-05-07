@@ -86,7 +86,7 @@ def forward(ann, param, x):
 
   for i in range(1, L + 1):
     if (i == L):
-      n_fun = SIGMOID_N_FUN
+      n_fun = LINEAR_N_FUN
     else:
       n_fun = param['g_fun']
 
@@ -117,7 +117,7 @@ def act_function(num_function, x):
 # Derivatives of the activation funciton
 def deriva_act(num_function, x):
   if 0 == num_function:  # Linear
-    return np.ones_like(x)
+    return 1
   if 1 == num_function:  # Relu
     return np.greater(x, 0).astype(float)
   if 2 == num_function:  # L-Relu
@@ -151,7 +151,7 @@ def gradW(ann, param, e):
   dl = [None] * (L + 1)
   de_dw = [None] * (L + 1)
 
-  dl[L] = e * deriva_act(SIGMOID_N_FUN, z[L])
+  dl[L] = e * deriva_act(LINEAR_N_FUN, z[L])
   de_dw[L] = dl[L] @ a[L - 1].T
 
   for l in range(L - 1, 0, -1):

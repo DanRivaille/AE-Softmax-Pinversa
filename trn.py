@@ -31,52 +31,6 @@ def get_minibatch(x, y, n, M):
   return x_batch, y_batch
 
 
-# miniBatch-SGDM's Training
-def trn_minibatch(x, y, ann, param, V):
-  N = x.shape[1]
-  M = param['M_batch']
-  nBatch = N // M
-  ann_mse = []
-  min_mse = 1e5
-  W = None
-
-  for n in range(nBatch):
-    xe, ye = get_minibatch(x, y, n, M)
-
-    act = ut.forward(ann, param, xe)
-
-    e = act - ye
-    cost = ut.get_mse(act, ye)
-    ann_mse.append(cost)
-
-    if cost < min_mse:
-      W = ann['W']
-      min_mse = cost
-
-    de_dw = ut.gradW(ann, param, e)
-    ann['W'], V = ut.updWV_rmsprop(ann, param, de_dw, V)
-
-  ann['W'] = W
-  return ann_mse
-
-
-# SNN's Training
-def train(x, y, ann, param):
-  V = create_momentum(ann['W'], ann['L'])
-  mse = []
-
-  for i in range(param['max_iter']):
-    X, Y = ut.sort_data_random(x, y, x.shape[0])
-    ann_mse = trn_minibatch(X, Y, ann, param, V)
-    mse.append(np.mean(ann_mse))
-
-    if (i % 100) == 0:
-      print('\n Iterar-SGD: ', i, mse[i])
-
-  print('\n Iterar-SGD: ', param['max_iter'], mse[-1])
-
-  return ann['W'], mse
-
 
 """
 # Training miniBatch for softmax
@@ -131,14 +85,38 @@ def init_ann(hidden_nodes, d, m):
 
   return ann
 
+# miniBatch-SGDM's Training
+def trn_minibatch(x, y, ann, param, V):
+  N = x.shape[1]
+  M = param['M_batch']
+  nBatch = N // M
+  ann_mse = []
+
+  for n in range(nBatch):
+    xe, ye = get_minibatch(x, y, n, M)
+    
+    act = ut.forward(ann, param, xe)
+    e = act - ye
+
+    de_dw = ut.gradW(ann, param, e)
+    ann['W'], V = ut.updWV_rmsprop(ann, param, de_dw, V)
+
+  return ann['W'], V
+
 
 # AE's Training by use miniBatch RMSprop+Pinv
 def train_ae(x, param_ae, Ni):
   d = x.shape[0]
   ae = init_ann([Ni], d, d)
-  #W = train(x, x, ae, param_ae)[0]
+  V = create_momentum(ae['W'], ae['L'])
 
-  #return W[1]
+  for i in range(param_ae['max_iter']):
+    xe = x[:, np.random.permutation(x.shape[1])]
+    ae['W'], V = trn_minibatch(xe, xe, ae, param_ae, V)
+  
+    if (i % 10) == 0:
+      print(i)
+
   return ae['W'][1]
 
 
@@ -148,9 +126,9 @@ def train_sae(X, param_ae):
   xe = X
   for n_nodes in param_ae['ae_nodes']:
     W = train_ae(xe, param_ae, n_nodes)
-    xe = W @ xe
-
     Wae.append(W)
+
+    xe = ut.act_function(param_ae['g_fun'], W @ xe)
 
   return Wae, xe
 
@@ -169,7 +147,6 @@ def main():
   xe, ye = load_data_trn()
   W_ae, xe = train_sae(xe, param_ae)
   W_sf = train_softmax(xe, ye)
-  #W_sf, Cost = train_softmax()
   np.savez('w_ae.npz', *W_ae)
   np.savez('w_sf.npz', W_sf)
   #save_w_dl(W_ae, W_sf, Cost)
