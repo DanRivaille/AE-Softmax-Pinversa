@@ -115,9 +115,10 @@ def train_ae_batch(x, w1, v, w2, param):
 
 
 # Softmax's training via SGD with Momentum
-def train_softmax():
-  """
+def train_softmax(x, y):
   W = ut.iniW(y.shape[0], x.shape[0])
+  """
+  
   V = np.zeros(W.shape)
   ...
   for Iter in range(1, par1[0]):
@@ -128,7 +129,7 @@ def train_softmax():
 
   return (W, Costo)
   """
-  return 1, 1
+  return W
 
 
 # AE's Training by use miniBatch RMSprop+Pinv
@@ -170,10 +171,11 @@ def main():
   param_ae = ut.load_cnf_ae()
   param_soft = ut.load_cnf_softmax()
   xe, ye = load_data_trn()
+  W_sf = train_softmax(xe, ye)
   W_ae = train_sae(xe, param_ae)
   #W_sf, Cost = train_softmax()
+
   #save_w_dl(W_ae, W_sf, Cost)
-  np.savez('w_snn.npz', *W_ae)
 
 
 if __name__ == '__main__':
