@@ -90,7 +90,6 @@ def trn_minibatch(x, y, ann, param, V):
   N = x.shape[1]
   M = param['M_batch']
   nBatch = N // M
-  ann_mse = []
 
   for n in range(nBatch):
     xe, ye = get_minibatch(x, y, n, M)

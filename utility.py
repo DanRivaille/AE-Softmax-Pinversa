@@ -183,19 +183,13 @@ def compute_Pinv(ann, H, param_ae):
   A = (H @ H.T) + (np.identity(n) / C)
   U, S, Vt = np.linalg.svd(A, full_matrices=True)
   S_1 = np.diag(1 / S)
-  print(S_1.shape)
   A_1 = Vt @ S_1 @ U.T
-  print(A_1.shape)
   return A_1
 
 
 def updPinv(ann, xe, param_ae):
-  H = ann['a'][1]
+  H = act_function(param_ae['g_fun'], ann['W'][1] @ xe)
   A_1 = compute_Pinv(ann, H, param_ae)
-  print(xe.shape)
-  print(H.shape, H.T.shape)
-  print(A_1.shape)
-  print()
   W_new = xe @ H.T @ A_1
   return W_new
 
