@@ -1,6 +1,7 @@
 import numpy as np
 import utility as ut
 
+
 def save_measure(cm, Fsc):
   np.savetxt("cmatriz.csv", np.array(cm), fmt='%i')
   np.savetxt("fscores.csv", np.array(Fsc))
@@ -24,6 +25,7 @@ def load_data_tst():
   FILE_Y = 'etst.csv'
   X_test, y_test = ut.load_data(FILE_X, FILE_Y)
   return X_test, y_test
+
 
 # Measure
 def metricas(a, y):
@@ -51,6 +53,7 @@ def confusion_matrix(a, y):
           cm[i, j] += 1
 
   return cm
+
 
 def create_ae_softmax_nn(param_ae):
   hidden_nodes = param_ae['ae_nodes']
