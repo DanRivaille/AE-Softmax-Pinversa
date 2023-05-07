@@ -7,11 +7,14 @@ def save_measure(cm, Fsc):
 
 
 def load_w_dl(L):
-  pesos = np.load('w_snn.npz', allow_pickle=True)
+  pesos_ae = np.load('w_ae.npz', allow_pickle=True)
   W = [None] * (L + 1)
 
-  for i in range(1, L + 1):
-    W[i] = pesos[f'arr_{i}']
+  for i in range(1, L):
+    W[i] = pesos_ae[f'arr_{i}']
+
+  pesos_sf = np.load('w_sf.npz')
+  W[L] = pesos_sf['arr_0']
 
   return W
 
@@ -49,13 +52,21 @@ def confusion_matrix(a, y):
 
   return cm
 
+def create_ae_softmax_nn(param_ae):
+  hidden_nodes = param_ae['ae_nodes']
+  ann = ut.create_ann(hidden_nodes)
+
+  return ann
+
+
 # Beginning ...
 def main():
   param_ae = ut.load_cnf_ae()
   param_soft = ut.load_cnf_softmax()
   xv, yv  = load_data_tst()
-  #ann = ut.create_ann(param['hidden_nodes'], xv)
-  #ann['W'] = load_w_dl(ann['L'])
+  ann = create_ae_softmax_nn(param_ae)
+  ann['W'] = load_w_dl(ann['L'])
+  print()
   #aL = ut.get_one_hot(np.argmax(ut.forward(ann, param, xv), axis=0) + 1, param['n_classes']).T
   #cm, Fsc = metricas(aL, yv)
   #save_measure(cm, Fsc)

@@ -174,7 +174,8 @@ def main():
   W_sf = train_softmax(xe, ye)
   W_ae = train_sae(xe, param_ae)
   #W_sf, Cost = train_softmax()
-
+  np.savez('w_ae.npz', *W_ae)
+  np.savez('w_sf.npz', W_sf)
   #save_w_dl(W_ae, W_sf, Cost)
 
 
