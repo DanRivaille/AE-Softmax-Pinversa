@@ -6,8 +6,8 @@ import utility as ut
 
 # Save weights and MSE  of the SNN
 def save_w_dl(W_ae, W_sf, ann_MSE):
-  np.savez('w_snn.npz', *W_ae)
-  np.savez('w_snn.npz', W_sf)
+  np.savez('w_ae.npz', *W_ae)
+  np.savez('w_sf.npz', W_sf)
   np.savetxt("costo.csv", ann_MSE)
 
 

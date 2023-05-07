@@ -7,6 +7,7 @@ _alpha_elu = 0.1
 _alpha_selu = 1.6732
 _lambda = 1.0507
 SIGMOID_N_FUN = 5
+LINEAR_N_FUN = 0
 
 
 def load_data(file_x, file_y):
@@ -97,6 +98,8 @@ def forward(ann, param, x):
 
 # Activation function
 def act_function(num_function, x):
+  if 0 == num_function:  # Linear
+    return x
   if 1 == num_function:  # Relu
     return np.maximum(0, x)
   if 2 == num_function:  # L-Relu
@@ -113,6 +116,8 @@ def act_function(num_function, x):
 
 # Derivatives of the activation funciton
 def deriva_act(num_function, x):
+  if 0 == num_function:  # Linear
+    return np.ones_like(x)
   if 1 == num_function:  # Relu
     return np.greater(x, 0).astype(float)
   if 2 == num_function:  # L-Relu
