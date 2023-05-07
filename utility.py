@@ -164,16 +164,21 @@ def gradW(ann, param, e):
 # Update W and V
 def updWV_rmsprop(ann, param, dE_dW, V):
   L = ann['L']
-  beta = 0.9
   mu = param['mu']
   W = ann['W']
-  epsilon = 0.00000001
 
   for l in range(1, L + 1):
-    V[l] = beta * V[l] + (1 - beta) * (dE_dW[l] ** 2)
-    gRMS = (1 / np.sqrt(V[l] + epsilon)) * dE_dW[l]
-    W[l] = W[l] - mu * gRMS
+    W[l], V[l] = applyRMSprop(mu, V[l], dE_dW[l], W[l])
 
+  return W, V
+
+def applyRMSprop(mu, V, dE_dW, W):
+  beta = 0.9
+  epsilon = 0.00000001
+
+  V = beta * V + (1 - beta) * (dE_dW ** 2)
+  gRMS = (1 / np.sqrt(V + epsilon)) * dE_dW
+  W = W - mu * gRMS
   return W, V
 
 
