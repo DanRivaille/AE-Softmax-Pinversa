@@ -194,16 +194,15 @@ def updPinv(ann, xe, param_ae):
   return W_new
 
 
-
 def sort_data_random(x, y, D):
   data = np.concatenate((x, y)).T
   np.random.shuffle(data)
   data = data.T
 
-  input = data[:D]
-  output = data[D:]
+  input_data = data[:D]
+  output_data = data[D:]
 
-  return input, output
+  return input_data, output_data
 
 
 # Get MSE
