@@ -1,12 +1,14 @@
 # SNN's Training :
 
-import numpy      as np
-import utility    as ut
+import numpy as np
+import utility as ut
 
-#Save weights and MSE  of the SNN
-def save_w_mse(W, ann_MSE):
-  np.savez('w_snn.npz', *W)
-  np.savetxt("costo.csv", np.array(ann_MSE))
+
+# Save weights and MSE  of the SNN
+def save_w_dl(W_ae, W_sf, ann_MSE):
+  np.savez('w_snn.npz', *W_ae)
+  np.savez('w_snn.npz', W_sf)
+  np.savetxt("costo.csv", ann_MSE)
 
 
 def create_momentum(W, L):
@@ -18,6 +20,7 @@ def create_momentum(W, L):
 
   return V
 
+
 def get_minibatch(x, y, n, M):
   lower_bound = n * M
   upper_bound = (n + 1) * M
@@ -27,7 +30,8 @@ def get_minibatch(x, y, n, M):
 
   return x_batch, y_batch
 
-#miniBatch-SGDM's Training 
+
+# miniBatch-SGDM's Training
 def trn_minibatch(x, y, ann, param, V):
   N = len(x[0])
   M = param['M_batch']
@@ -55,13 +59,14 @@ def trn_minibatch(x, y, ann, param, V):
   ann['W'] = W
   return ann_mse
 
-#SNN's Training 
+
+# SNN's Training
 def train(x, y, ann, param):
   V = create_momentum(ann['W'], ann['L'])
   mse = []
 
   for i in range(param['max_iter']):
-    X, Y = ut.sort_data_random(x,y, x.shape[0])
+    X, Y = ut.sort_data_random(x, y, x.shape[0])
     ann_mse = trn_minibatch(X, Y, ann, param, V)
     mse.append(np.mean(ann_mse))
 
@@ -73,13 +78,84 @@ def train(x, y, ann, param):
   return ann['W'], mse
 
 
-def init_ann(param, x):
-  ann = ut.create_ann(param['hidden_nodes'], x)
-  d = x.shape[0]
-  ann['W'] = ut.iniWs(ann['W'], ann['L'], d, param['n_classes'], param['hidden_nodes'])
+def init_ann(hidden_nodes, d, m):
+  """
+  Initialize an ANN with its variables saved into a map.
+  :param hidden_nodes: List with the nodes quantity by layer.
+  :param d: Size of the input
+  :param m: Size of the output
+  """
+  ann = ut.create_ann(hidden_nodes)
+  ann['W'] = ut.iniWs(ann['W'], ann['L'], d, m, hidden_nodes)
 
   return ann
 
+
+"""
+# Training miniBatch for softmax
+def train_sft_batch(x, y, W, V, param):
+  costo = []
+  for i in range(numBatch):
+    ...
+    ...
+  return (W, V, costo)
+
+
+
+
+
+# AE's Training with miniBatch
+def train_ae_batch(x, w1, v, w2, param):
+  numBatch = np.int16(np.floor(x.shape[1] / param[0]))
+  cost = []
+  for i in range(numBatch):
+    ....
+  return (w1, v, cost)
+    """
+
+
+# Softmax's training via SGD with Momentum
+def train_softmax():
+  """
+  W = ut.iniW(y.shape[0], x.shape[0])
+  V = np.zeros(W.shape)
+  ...
+  for Iter in range(1, par1[0]):
+    idx = np.random.permutation(x.shape[1])
+    xe, ye = x[:, idx], y[:, idx]
+    W, V, c = train_sft_batch(xe, ye, W, V, param)
+    ...
+
+  return (W, Costo)
+  """
+  return 1, 1
+
+
+# AE's Training by use miniBatch RMSprop+Pinv
+def train_ae(x, param_ae, Ni):
+  d = x.shape[0]
+  ae = init_ann([Ni], d, d)
+  """
+  ....
+  for Iter in range(1, param):
+    xe = x[:, np.random.permutation(x.shape[1])]
+    w1, v, c = train_ae_batch(xe, w1, v, w2, param)
+    ....
+  """
+
+  return ae['W'][1]
+
+
+# SAE's Training
+def train_sae(X, param_ae):
+  Wae = [None]
+  xe = X
+  for n_nodes in param_ae['ae_nodes']:
+    W = train_ae(xe, param_ae, n_nodes)
+
+    Wae.append(W)
+
+  return Wae
 
 # Load data to train the SNN
 def load_data_trn():
@@ -94,11 +170,11 @@ def main():
   param_ae = ut.load_cnf_ae()
   param_soft = ut.load_cnf_softmax()
   xe, ye = load_data_trn()
-  #ann = init_ann(param, xe)
-  #W, Cost = train(xe, ye, ann, param)
-  #save_w_mse(W, Cost)
+  W_ae = train_sae(xe, param_ae)
+  #W_sf, Cost = train_softmax()
+  #save_w_dl(W_ae, W_sf, Cost)
+  np.savez('w_snn.npz', *W_ae)
 
 
-if __name__ == '__main__':   
+if __name__ == '__main__':
   main()
-
