@@ -162,9 +162,7 @@ def main():
   xe, ye = load_data_trn()
   W_ae, xe = train_sae(xe, param_ae)
   W_sf, Cost = train_softmax(xe, ye, param_soft)
-  np.savez('w_ae.npz', *W_ae)
-  np.savez('w_sf.npz', W_sf)
-  # save_w_dl(W_ae, W_sf, Cost)
+  save_w_dl(W_ae, W_sf, Cost)
 
 
 if __name__ == '__main__':
