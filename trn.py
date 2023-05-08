@@ -40,8 +40,6 @@ def cross_entropy_cost(a, y):
 # Calculate Softmax
 def softmax(z):
   exp_z = np.exp(z - np.max(z))
-  if np.any(exp_z.sum(axis=0, keepdims=True) == 0):
-    print()
   return exp_z / exp_z.sum(axis=0, keepdims=True)
 
 
@@ -80,7 +78,7 @@ def train_softmax(x, y, param):
 
     Costo.append(np.mean(cost))
 
-    if (i % 10) == 0:
+    if (i % 50) == 0:
       print(i, Costo[-1])
 
   return W, Costo
