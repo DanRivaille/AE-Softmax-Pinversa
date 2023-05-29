@@ -196,7 +196,7 @@ def updPinv(ann, xe, param_ae):
   H = act_function(param_ae['g_fun'], ann['W'][1] @ xe)
   A_1 = compute_Pinv(ann, H, param_ae)
   W_new = xe @ H.T @ A_1
-  return W_new
+  return ann['W'][2]
 
 
 # Get MSE

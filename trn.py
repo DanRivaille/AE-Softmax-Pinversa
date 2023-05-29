@@ -113,7 +113,7 @@ def trn_minibatch(x, y, ann, param, V):
     de_dw = ut.gradW(ann, param, e)
     ann['W'], V = ut.updWV_rmsprop(ann, param, de_dw, V)
 
-  # ann['W'][2] = ut.updPinv(ann, x, param)
+  ann['W'][2] = ut.updPinv(ann, x, param)
 
   return ann['W'], V, mse
 
