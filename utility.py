@@ -31,7 +31,8 @@ def load_cnf_ae():
   for n_nodes in cnf_list[5:]:
     ae_nodes.append(int(n_nodes))
 
-  param['ae_nodes'] = ae_nodes
+  param['ae_n_layers'] = len(ae_nodes)
+  param['ae_nodes'] = ae_nodes + ae_nodes[::-1][1:]
   return param
 
 

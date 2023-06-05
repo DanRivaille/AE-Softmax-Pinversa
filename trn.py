@@ -119,34 +119,25 @@ def trn_minibatch(x, y, ann, param, V, S):
   return ann['W'], V, S, mse
 
 
-# AE's Training by use miniBatch RMSprop+Pinv
-def train_ae(x, param_ae, Ni):
-  d = x.shape[0]
-  ae = init_ann([Ni], d, d)
+# SAE's Training
+def train_sae(X, param_ae):
+  d, N = X.shape
+  ae = init_ann(param_ae['ae_nodes'], d, d)
   V = create_momentum(ae['W'], ae['L'])
   S = create_momentum(ae['W'], ae['L'])
 
   for i in range(param_ae['max_iter']):
-    xe = x[:, np.random.permutation(x.shape[1])]
+    xe = X[:, np.random.permutation(N)]
     ae['W'], V, S, mse = trn_minibatch(xe, xe, ae, param_ae, V, S)
 
     if (i % 10) == 0:
       print(i, np.mean(mse))
 
-  return ae['W'][1]
-
-
-# SAE's Training
-def train_sae(X, param_ae):
-  Wae = [None]
-  xe = X
-  for n_nodes in param_ae['ae_nodes']:
-    W = train_ae(xe, param_ae, n_nodes)
-    Wae.append(W)
-
-    xe = ut.act_function(param_ae['g_fun'], W @ xe)
-
-  return Wae, xe
+  a = X.copy()
+  for l in range(1, param_ae['ae_n_layers'] + 1):
+    a = ut.act_function(param_ae['g_fun'], ae['W'][l] @ a)
+    
+  return ae['W'][:param_ae['ae_n_layers'] + 1], a
 
 
 # Load data to train the SNN
@@ -162,6 +153,7 @@ def main():
   param_ae = ut.load_cnf_ae()
   param_soft = ut.load_cnf_softmax()
   xe, ye = load_data_trn()
+  print(param_ae)
   W_ae, xe = train_sae(xe, param_ae)
   W_sf, Cost = train_softmax(xe, ye, param_soft)
   save_w_dl(W_ae, W_sf, Cost)
