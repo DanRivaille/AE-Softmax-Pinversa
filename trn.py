@@ -44,7 +44,7 @@ def softmax(z):
 
 
 # Training miniBatch for softmax
-def train_sft_batch(x, y, W, V, param):
+def train_sft_batch(x, y, W, V, S, param):
   N = x.shape[1]
   M = param['M_batch']
   nBatch = N // M
@@ -60,21 +60,22 @@ def train_sft_batch(x, y, W, V, param):
     mse.append(costo)
 
     gW = - ((e @ xe.T) / M)
-    W, V = ut.applyRMSprop(param['mu'], V, gW, W)
+    W, V, S = ut.applyRMSprop(param['mu'], V, S, gW, W, n)
 
-  return W, V, mse
+  return W, V, S, mse
 
 
 # Softmax's training via SGD with Momentum
 def train_softmax(x, y, param):
   W = ut.iniW(y.shape[0], x.shape[0])
-  V = np.zeros(W.shape)
+  V = np.zeros_like(W)
+  S = np.zeros_like(W)
   Costo = []
 
   for i in range(param['max_iter']):
     idx = np.random.permutation(x.shape[1])
     xe, ye = x[:, idx], y[:, idx]
-    W, V, cost = train_sft_batch(xe, ye, W, V, param)
+    W, V, S, cost = train_sft_batch(xe, ye, W, V, S, param)
 
     Costo.append(np.mean(cost))
 
@@ -98,7 +99,7 @@ def init_ann(hidden_nodes, d, m):
 
 
 # miniBatch-SGDM's Training
-def trn_minibatch(x, y, ann, param, V):
+def trn_minibatch(x, y, ann, param, V, S):
   N = x.shape[1]
   M = param['M_batch']
   nBatch = N // M
@@ -111,11 +112,11 @@ def trn_minibatch(x, y, ann, param, V):
     costo = ut.get_mse(act, ye)
     mse.append(costo)
     de_dw = ut.gradW(ann, param, e)
-    ann['W'], V = ut.updWV_rmsprop(ann, param, de_dw, V)
+    ann['W'], V, S = ut.updWV_rmsprop(ann, param, de_dw, V, S, n)
 
-  ann['W'][2] = ut.updPinv(ann, x, param)
+  #ann['W'][2] = ut.updPinv(ann, x, param)
 
-  return ann['W'], V, mse
+  return ann['W'], V, S, mse
 
 
 # AE's Training by use miniBatch RMSprop+Pinv
@@ -123,10 +124,11 @@ def train_ae(x, param_ae, Ni):
   d = x.shape[0]
   ae = init_ann([Ni], d, d)
   V = create_momentum(ae['W'], ae['L'])
+  S = create_momentum(ae['W'], ae['L'])
 
   for i in range(param_ae['max_iter']):
     xe = x[:, np.random.permutation(x.shape[1])]
-    ae['W'], V, mse = trn_minibatch(xe, xe, ae, param_ae, V)
+    ae['W'], V, S, mse = trn_minibatch(xe, xe, ae, param_ae, V, S)
 
     if (i % 10) == 0:
       print(i, np.mean(mse))

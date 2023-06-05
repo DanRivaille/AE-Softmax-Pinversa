@@ -162,24 +162,28 @@ def gradW(ann, param, e):
 
 
 # Update W and V
-def updWV_rmsprop(ann, param, dE_dW, V):
+def updWV_rmsprop(ann, param, dE_dW, V, S, t):
   L = ann['L']
   mu = param['mu']
   W = ann['W']
 
   for l in range(1, L + 1):
-    W[l], V[l] = applyRMSprop(mu, V[l], dE_dW[l], W[l])
+    W[l], V[l], S[l] = applyRMSprop(mu, V[l], S[l], dE_dW[l], W[l], t)
 
-  return W, V
+  return W, V, S
 
-def applyRMSprop(mu, V, dE_dW, W):
+def applyRMSprop(mu, V, S, dE_dW, W, t):
   beta = 0.9
-  epsilon = 0.00000001
+  epsilon = 1.0e-8
+  b1 = 0.9
+  b2 = 0.999
 
-  V = beta * V + (1 - beta) * (dE_dW ** 2)
-  gRMS = (1 / np.sqrt(V + epsilon)) * dE_dW
-  W = W - mu * gRMS
-  return W, V
+  V = b1 * V + (1 - b1) * dE_dW
+  S = b2 * S + (1 - b2) * (dE_dW ** 2)
+  gAdam = np.sqrt(1 - (b2 ** (t + 1))) / (1 - (b1 ** (t + 1))) * V / (np.sqrt(S) + epsilon)
+  W = W - mu * gAdam
+
+  return W, V, S
 
 
 def compute_Pinv(ann, H, param_ae):
