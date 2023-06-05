@@ -194,23 +194,6 @@ def computeAdam(V, S, t, b1, b2):
   return adam_left_term * adam_right_term
 
 
-def compute_Pinv(ann, H, param_ae):
-  n = ann['hidden_nodes'][0]
-  C = param_ae['p_inv_param']
-  A = (H @ H.T) + (np.identity(n) / C)
-  U, S, Vt = np.linalg.svd(A, full_matrices=True)
-  S_1 = np.diag(1 / S)
-  A_1 = Vt @ S_1 @ U.T
-  return A_1
-
-
-def updPinv(ann, xe, param_ae):
-  H = act_function(param_ae['g_fun'], ann['W'][1] @ xe)
-  A_1 = compute_Pinv(ann, H, param_ae)
-  W_new = xe @ H.T @ A_1
-  return ann['W'][2]
-
-
 # Get MSE
 def get_mse(y_pred, y_true):
   N = y_true.shape[1]

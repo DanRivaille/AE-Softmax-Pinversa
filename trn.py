@@ -114,8 +114,6 @@ def trn_minibatch(x, y, ann, param, V, S):
     de_dw = ut.gradW(ann, param, e)
     ann['W'], V, S = ut.updWV_rmsprop(ann, param, de_dw, V, S, n)
 
-  #ann['W'][2] = ut.updPinv(ann, x, param)
-
   return ann['W'], V, S, mse
 
 
@@ -153,7 +151,6 @@ def main():
   param_ae = ut.load_cnf_ae()
   param_soft = ut.load_cnf_softmax()
   xe, ye = load_data_trn()
-  print(param_ae)
   W_ae, xe = train_sae(xe, param_ae)
   W_sf, Cost = train_softmax(xe, ye, param_soft)
   save_w_dl(W_ae, W_sf, Cost)

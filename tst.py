@@ -56,6 +56,7 @@ def confusion_matrix(a, y):
 
 
 def create_ae_softmax_nn(param_ae):
+  param_ae['ae_nodes'] = param_ae['ae_nodes'][:param_ae['ae_n_layers']]
   hidden_nodes = param_ae['ae_nodes']
   ann = ut.create_ann(hidden_nodes)
 
@@ -70,6 +71,7 @@ def main():
   ann['W'] = load_w_dl(ann['L'])
   aL = ut.get_one_hot(np.argmax(ut.forward(ann, param_ae, xv), axis=0) + 1, yv.shape[0]).T
   cm, Fsc = metricas(aL, yv)
+  print(Fsc[-1]*100)
   save_measure(cm, Fsc)
 
 
