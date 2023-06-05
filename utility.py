@@ -168,22 +168,29 @@ def updWV_rmsprop(ann, param, dE_dW, V, S, t):
   W = ann['W']
 
   for l in range(1, L + 1):
-    W[l], V[l], S[l] = applyRMSprop(mu, V[l], S[l], dE_dW[l], W[l], t)
+    W[l], V[l], S[l] = applyAdam(mu, V[l], S[l], dE_dW[l], W[l], t)
 
   return W, V, S
 
-def applyRMSprop(mu, V, S, dE_dW, W, t):
-  beta = 0.9
-  epsilon = 1.0e-8
+
+def applyAdam(mu, V, S, dE_dW, W, t):
   b1 = 0.9
   b2 = 0.999
 
   V = b1 * V + (1 - b1) * dE_dW
   S = b2 * S + (1 - b2) * (dE_dW ** 2)
-  gAdam = np.sqrt(1 - (b2 ** (t + 1))) / (1 - (b1 ** (t + 1))) * V / (np.sqrt(S) + epsilon)
+  gAdam = computeAdam(V, S, t + 1, b1, b2)
   W = W - mu * gAdam
 
   return W, V, S
+
+
+def computeAdam(V, S, t, b1, b2):
+  epsilon = 1.0e-8
+  adam_left_term = np.sqrt(1 - b2**t) / (1 - b1**t)
+  adam_right_term = V / (np.sqrt(S) + epsilon)
+
+  return adam_left_term * adam_right_term
 
 
 def compute_Pinv(ann, H, param_ae):

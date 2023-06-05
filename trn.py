@@ -60,7 +60,7 @@ def train_sft_batch(x, y, W, V, S, param):
     mse.append(costo)
 
     gW = - ((e @ xe.T) / M)
-    W, V, S = ut.applyRMSprop(param['mu'], V, S, gW, W, n)
+    W, V, S = ut.applyAdam(param['mu'], V, S, gW, W, n)
 
   return W, V, S, mse
 
