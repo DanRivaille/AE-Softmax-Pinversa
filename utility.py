@@ -16,19 +16,21 @@ def load_data(file_x, file_y):
   return X, y.T
 
 
-def load_cnf_ae():
-  FILE_CNF = 'cnf_sae.csv'
+def load_cnf_ae(FILE_CNF='cnf_dae.csv'):
   param = dict()
   cnf_list = np.loadtxt(FILE_CNF, dtype=float)
-  param['p_inv_param'] = int(cnf_list[0])
-  param['g_fun'] = int(cnf_list[1])
-  param['max_iter'] = int(cnf_list[2])
-  param['M_batch'] = int(cnf_list[3])
-  param['mu'] = cnf_list[4]
+  param['n_classes'] = int(cnf_list[0])
+  param['n_frame'] = int(cnf_list[1])
+  param['l_frame'] = int(cnf_list[2])
+  param['p_train'] = cnf_list[3]
+  param['g_fun'] = int(cnf_list[4])
+  param['max_iter'] = int(cnf_list[5])
+  param['M_batch'] = int(cnf_list[6])
+  param['mu'] = cnf_list[7]
   
   ae_nodes = []
 
-  for n_nodes in cnf_list[5:]:
+  for n_nodes in cnf_list[8:]:
     ae_nodes.append(int(n_nodes))
 
   param['ae_n_layers'] = len(ae_nodes)
